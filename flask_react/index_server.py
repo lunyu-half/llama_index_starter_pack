@@ -16,6 +16,18 @@ from llama_index.core.node_parser import SentenceSplitter
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.llms.openai import OpenAI
 
+from llama_index.llms.mistralai import MistralAI
+from llama_index.embeddings.mistralai import MistralAIEmbedding
+from llama_index.core import Settings
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+Settings.llm = MistralAI(model="mistral-large-latest", temperature=0, api_key=os.getenv("MISTRAL_API_KEY"))
+
+Settings.embed_model = MistralAIEmbedding(api_key=os.getenv("MISTRAL_API_KEY"))
+
 index = None
 stored_docs = {}
 lock = Lock()
@@ -29,7 +41,8 @@ def initialize_index():
     global index, stored_docs
     
     transformations = SentenceSplitter(chunk_size=512)
-    embed_model = OpenAIEmbedding(model_name="text-embedding-3-small")
+    ##embed_model = OpenAIEmbedding(model_name="text-embedding-3-small")
+    embed_model = MistralAIEmbedding()
     with lock:
         if os.path.exists(index_name):
             index = load_index_from_storage(
@@ -46,10 +59,10 @@ def initialize_index():
 def query_index(query_text):
     """Query the global index."""
     global index
-    llm = OpenAI(model="gpt-4o-mini")
+    ## llm = OpenAI(model="gpt-4o-mini")
     response = index.as_query_engine(
         similarity_top_k=2,
-        llm=llm,
+        llm=Settings.llm,
     ).query(query_text)
     return response
 

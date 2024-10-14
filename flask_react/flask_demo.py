@@ -29,8 +29,8 @@ def query_index():
         "sources": [{"text": str(x.text), 
                      "similarity": round(x.score, 2),
                      "doc_id": str(x.id_),
-                     "start": x.node_info['start'],
-                     "end": x.node_info['end'],
+                    # "start": x.node_info['start'],
+                    # "end": x.node_info['end'],
                     } for x in response.source_nodes]
     }
     return make_response(jsonify(response_json)), 200

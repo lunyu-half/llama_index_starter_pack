@@ -7,3 +7,5 @@ node_modules
 build
 index.json
 stored_documents.pkl
+saved_index/
+.env
